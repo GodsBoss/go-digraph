@@ -34,6 +34,9 @@ type Graph interface {
 	// an error if there is already a connection from origin to destination (but
 	// not if there is a connection from destination to origin).
 	Connect(origin, destination Node) error
+
+	// Edges returns all edges of the graph.
+	Edges() []Edge
 }
 
 type graph struct {
@@ -91,6 +94,22 @@ func (g *graph) Connect(origin, destination Node) error {
 	return nil
 }
 
+func (g *graph) Edges() []Edge {
+	edges := make([]Edge, 0)
+	for origin := range g.originToDestination {
+		for destination := range g.originToDestination[origin] {
+			edges = append(
+				edges,
+				Edge{
+					Origin:      origin,
+					Destination: destination,
+				},
+			)
+		}
+	}
+	return edges
+}
+
 // Node is a node of a directed graph. It is a value object. Can be used as
 // map key. It is also possible to compare nodes with ==.
 type Node interface {
@@ -103,3 +122,9 @@ type node struct {
 }
 
 func (n node) internal() {}
+
+// Edge is a connection from an origin node to a destination node.
+type Edge struct {
+	Origin      Node
+	Destination Node
+}

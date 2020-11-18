@@ -174,3 +174,48 @@ func TestConnect(t *testing.T) {
 		)
 	}
 }
+
+func TestEdges(t *testing.T) {
+	g := digraph.New()
+	n1 := g.NewNode()
+	n2 := g.NewNode()
+	n3 := g.NewNode()
+
+	g.Connect(n1, n2)
+	g.Connect(n3, n3)
+	g.Connect(n1, n3)
+
+	expectedEdges := []digraph.Edge{
+		{
+			Origin:      n1,
+			Destination: n2,
+		},
+		{
+			Origin:      n3,
+			Destination: n3,
+		},
+		{
+			Origin:      n1,
+			Destination: n3,
+		},
+	}
+
+	edgesFromGraph := g.Edges()
+
+	if len(edgesFromGraph) != 3 {
+		t.Errorf("expected 3 edges from graph, got %d", len(edgesFromGraph))
+	}
+
+	for i := range expectedEdges {
+		found := false
+		for j := range edgesFromGraph {
+			if expectedEdges[i] == edgesFromGraph[j] {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("edge %+v not found in %+v", expectedEdges[i], edgesFromGraph)
+		}
+	}
+}
