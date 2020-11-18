@@ -15,6 +15,9 @@ type Graph interface {
 
 	// Nodes returns all nodes.
 	Nodes() []Node
+
+	// Contains checks wether node is contained in this graph.
+	Contains(Node) bool
 }
 
 type graph struct {
@@ -35,6 +38,15 @@ func (g *graph) NewNode() Node {
 
 func (g *graph) Nodes() []Node {
 	return g.nodes
+}
+
+func (g *graph) Contains(n Node) bool {
+	for i := range g.nodes {
+		if g.nodes[i] == n {
+			return true
+		}
+	}
+	return false
 }
 
 // Node is a node of a directed graph. It is a value object. Can be used as
