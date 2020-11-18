@@ -1,10 +1,9 @@
 package digraph_test
 
 import (
-	"fmt"
-
 	"github.com/GodsBoss/go-digraph"
 
+	"fmt"
 	"testing"
 )
 
