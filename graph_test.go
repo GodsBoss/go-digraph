@@ -184,6 +184,8 @@ func TestEdges(t *testing.T) {
 	g.Connect(n1, n2)
 	g.Connect(n3, n3)
 	g.Connect(n1, n3)
+	g.Connect(n3, n2)
+	g.Disconnect(n3, n2)
 
 	expectedEdges := []digraph.Edge{
 		{
@@ -217,5 +219,56 @@ func TestEdges(t *testing.T) {
 		if !found {
 			t.Errorf("edge %+v not found in %+v", expectedEdges[i], edgesFromGraph)
 		}
+	}
+}
+
+func TestDisconnectEdgeErrors(t *testing.T) {
+	testcases := map[string]struct {
+		f func(g digraph.Graph) (origin, destination digraph.Node)
+	}{
+		"origin_not_contained": {
+			f: func(g digraph.Graph) (origin, destination digraph.Node) {
+				origin = g.NewNode()
+				g.Remove(origin)
+				return origin, g.NewNode()
+			},
+		},
+		"destination_not_contained": {
+			f: func(g digraph.Graph) (origin, destination digraph.Node) {
+				destination = g.NewNode()
+				g.Remove(destination)
+				return g.NewNode(), destination
+			},
+		},
+		"not_connected": {
+			f: func(g digraph.Graph) (origin, destination digraph.Node) {
+				return g.NewNode(), g.NewNode()
+			},
+		},
+		"connection_removed": {
+			f: func(g digraph.Graph) (origin, destination digraph.Node) {
+				origin = g.NewNode()
+				destination = g.NewNode()
+				g.Connect(origin, destination)
+				g.Disconnect(origin, destination)
+				return origin, destination
+			},
+		},
+	}
+
+	for name := range testcases {
+		testcase := testcases[name]
+		t.Run(
+			name,
+			func(t *testing.T) {
+				g := digraph.New()
+				origin, destination := testcase.f(g)
+				err := g.Disconnect(origin, destination)
+
+				if err == nil {
+					t.Errorf("expected error")
+				}
+			},
+		)
 	}
 }

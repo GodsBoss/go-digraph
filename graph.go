@@ -35,6 +35,10 @@ type Graph interface {
 	// not if there is a connection from destination to origin).
 	Connect(origin, destination Node) error
 
+	// Disconnect removes an existing edge. Returns an error if there is no edge
+	// from origin to destination.
+	Disconnect(origin, destination Node) error
+
 	// Edges returns all edges of the graph.
 	Edges() []Edge
 }
@@ -91,6 +95,20 @@ func (g *graph) Connect(origin, destination Node) error {
 		return fmt.Errorf("already connected")
 	}
 	g.originToDestination[origin][destination] = struct{}{}
+	return nil
+}
+
+func (g *graph) Disconnect(origin, destination Node) error {
+	if !g.Contains(origin) {
+		return fmt.Errorf("origin not contained in graph")
+	}
+	if !g.Contains(destination) {
+		return fmt.Errorf("destination not contained in graph")
+	}
+	if _, ok := g.originToDestination[origin][destination]; !ok {
+		return fmt.Errorf("not connected")
+	}
+	delete(g.originToDestination[origin], destination)
 	return nil
 }
 
