@@ -23,8 +23,8 @@ func TestGraphNodes(t *testing.T) {
 
 	for i := range addedNodes {
 		found := false
-		for i := range nodesFromGraph {
-			if addedNodes[i] == nodesFromGraph[i] {
+		for j := range nodesFromGraph {
+			if addedNodes[i] == nodesFromGraph[j] {
 				found = true
 				break
 			}
