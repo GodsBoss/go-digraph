@@ -283,3 +283,183 @@ func TestDisconnectEdgeErrors(t *testing.T) {
 		)
 	}
 }
+
+func TestPointX(t *testing.T) {
+	g := digraph.New()
+
+	nodeWithoutConnections := g.NewNode()
+	nodeConnectedToItself := g.NewNode()
+	nodeMututallyConnected1 := g.NewNode()
+	nodeMututallyConnected2 := g.NewNode()
+	nodeOrigin := g.NewNode()
+	nodeDestination1 := g.NewNode()
+	nodeDestination2 := g.NewNode()
+	nodeOrigin1 := g.NewNode()
+	nodeOrigin2 := g.NewNode()
+	nodeDestination := g.NewNode()
+	nodeStart := g.NewNode()
+	nodeMiddle := g.NewNode()
+	nodeEnd := g.NewNode()
+
+	mustConnect := func(origin, destination digraph.Node) {
+		err := g.Connect(origin, destination)
+		if err != nil {
+			t.Fatalf("could not connect nodes: %+v", err)
+		}
+	}
+
+	mustConnect(nodeConnectedToItself, nodeConnectedToItself)
+	mustConnect(nodeMututallyConnected1, nodeMututallyConnected2)
+	mustConnect(nodeMututallyConnected2, nodeMututallyConnected1)
+	mustConnect(nodeOrigin, nodeDestination1)
+	mustConnect(nodeOrigin, nodeDestination2)
+	mustConnect(nodeOrigin1, nodeDestination)
+	mustConnect(nodeOrigin2, nodeDestination)
+	mustConnect(nodeStart, nodeMiddle)
+	mustConnect(nodeMiddle, nodeEnd)
+
+	testcases := map[string]struct {
+		node                 digraph.Node
+		expectedOrigins      []digraph.Node
+		expectedDestinations []digraph.Node
+	}{
+		"nodeWithoutConnections": {
+			node:                 nodeWithoutConnections,
+			expectedOrigins:      make([]digraph.Node, 0),
+			expectedDestinations: make([]digraph.Node, 0),
+		},
+		"nodeConnectedToItself": {
+			node: nodeConnectedToItself,
+			expectedOrigins: []digraph.Node{
+				nodeConnectedToItself,
+			},
+			expectedDestinations: []digraph.Node{
+				nodeConnectedToItself,
+			},
+		},
+		"nodeMututallyConnected": {
+			node: nodeMututallyConnected2,
+			expectedOrigins: []digraph.Node{
+				nodeMututallyConnected1,
+			},
+			expectedDestinations: []digraph.Node{
+				nodeMututallyConnected1,
+			},
+		},
+		"nodeDestination1": {
+			node: nodeDestination1,
+			expectedOrigins: []digraph.Node{
+				nodeOrigin,
+			},
+			expectedDestinations: make([]digraph.Node, 0),
+		},
+		"nodeOrigin1": {
+			node:            nodeOrigin1,
+			expectedOrigins: make([]digraph.Node, 0),
+			expectedDestinations: []digraph.Node{
+				nodeDestination,
+			},
+		},
+		"nodeDestination": {
+			node: nodeDestination,
+			expectedOrigins: []digraph.Node{
+				nodeOrigin1,
+				nodeOrigin2,
+			},
+			expectedDestinations: make([]digraph.Node, 0),
+		},
+		"nodeOrigin": {
+			node:            nodeOrigin,
+			expectedOrigins: make([]digraph.Node, 0),
+			expectedDestinations: []digraph.Node{
+				nodeDestination1,
+				nodeDestination2,
+			},
+		},
+		"nodeMiddle": {
+			node: nodeMiddle,
+			expectedOrigins: []digraph.Node{
+				nodeStart,
+			},
+			expectedDestinations: []digraph.Node{
+				nodeEnd,
+			},
+		},
+	}
+
+	for name := range testcases {
+		testcase := testcases[name]
+		t.Run(
+			name,
+			func(t *testing.T) {
+				t.Run(
+					"origins",
+					func(t *testing.T) {
+						origins, err := g.PointingTo(testcase.node)
+						if err != nil {
+							t.Fatalf("failed getting origins for node: %+v", err)
+						}
+						assertNodesContainNodes(t, testcase.expectedOrigins, origins)
+					},
+				)
+				t.Run(
+					"destinations",
+					func(t *testing.T) {
+						destinations, err := g.PointedToFrom(testcase.node)
+						if err != nil {
+							t.Fatalf("failed getting destinations for node: %+v", err)
+						}
+						assertNodesContainNodes(t, testcase.expectedDestinations, destinations)
+					},
+				)
+			},
+		)
+	}
+}
+
+func assertNodesContainNodes(t *testing.T, expected []digraph.Node, actual []digraph.Node) {
+	for i := range expected {
+		found := false
+		for j := range actual {
+			if expected[i] == actual[j] {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("did not find node %+v (index %d) in %+v", expected[i], i, actual)
+		}
+	}
+}
+
+func TestPointXNodeNotContained(t *testing.T) {
+	g := digraph.New()
+	n := g.NewNode()
+	g.Remove(n)
+
+	t.Run(
+		"PointingTo",
+		func(t *testing.T) {
+			origins, err := g.PointingTo(n)
+			if err == nil {
+				t.Errorf("expected error")
+			}
+			if len(origins) > 0 {
+				t.Errorf("expected no nodes, got %+v", origins)
+			}
+		},
+	)
+
+	t.Run(
+		"PointedToFrom",
+		func(t *testing.T) {
+			destinations, err := g.PointedToFrom(n)
+			if err == nil {
+				t.Errorf("expected error")
+			}
+			if len(destinations) > 0 {
+				t.Errorf("expected no nodes, got %+v", destinations)
+			}
+		},
+	)
+}

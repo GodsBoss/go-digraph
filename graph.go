@@ -42,6 +42,14 @@ type Graph interface {
 
 	// Edges returns all edges of the graph.
 	Edges() []Edge
+
+	// PointingTo returns a list of all nodes pointing to the given node.
+	// Returns an error if that node does not belong to the graph.
+	PointingTo(Node) ([]Node, error)
+
+	// PointedToFrom returns a list of all nodes pointed to from the given node.
+	// Returns an error if that node does not belong to the graph.
+	PointedToFrom(Node) ([]Node, error)
 }
 
 type graph struct {
@@ -141,6 +149,28 @@ func (g *graph) Edges() []Edge {
 		}
 	}
 	return edges
+}
+
+func (g *graph) PointingTo(n Node) ([]Node, error) {
+	if !g.Contains(n) {
+		return nil, fmt.Errorf("node not contained in graph")
+	}
+	origins := make([]Node, 0, len(g.destinationToOrigin[n]))
+	for origin := range g.destinationToOrigin[n] {
+		origins = append(origins, origin)
+	}
+	return origins, nil
+}
+
+func (g *graph) PointedToFrom(n Node) ([]Node, error) {
+	if !g.Contains(n) {
+		return nil, fmt.Errorf("node not contained in graph")
+	}
+	destinations := make([]Node, 0, len(g.originToDestination[n]))
+	for destination := range g.originToDestination {
+		destinations = append(destinations, destination)
+	}
+	return destinations, nil
 }
 
 // Node is a node of a directed graph. It is a value object. Can be used as
