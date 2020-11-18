@@ -102,7 +102,7 @@ func TestRemoveNodes(t *testing.T) {
 	for i := range testcases {
 		testcase := testcases[i]
 		t.Run(
-			fmt.Sprintf("remove %s from %s", testcase.node, testcase.graph),
+			fmt.Sprintf("remove %s from %s", testcase.nodeName, testcase.graphName),
 			func(t *testing.T) {
 				err := testcase.graph.Remove(testcase.node)
 
