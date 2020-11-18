@@ -117,3 +117,61 @@ func TestRemoveNodes(t *testing.T) {
 		)
 	}
 }
+
+func TestConnect(t *testing.T) {
+	testcases := map[string]struct {
+		f            func(g digraph.Graph) error
+		expectsError bool
+	}{
+		"success": {
+			f: func(g digraph.Graph) error {
+				return g.Connect(g.NewNode(), g.NewNode())
+			},
+			expectsError: false,
+		},
+		"connects_twice": {
+			f: func(g digraph.Graph) error {
+				n1 := g.NewNode()
+				n2 := g.NewNode()
+				_ = g.Connect(n1, n2)
+				return g.Connect(n1, n2)
+			},
+			expectsError: true,
+		},
+		"origin_not_contained": {
+			f: func(g digraph.Graph) error {
+				n := g.NewNode()
+				g.Remove(n)
+
+				return g.Connect(n, g.NewNode())
+			},
+			expectsError: true,
+		},
+		"destination_not_contained": {
+			f: func(g digraph.Graph) error {
+				n := g.NewNode()
+				g.Remove(n)
+
+				return g.Connect(g.NewNode(), n)
+			},
+			expectsError: true,
+		},
+	}
+
+	for name := range testcases {
+		testcase := testcases[name]
+		t.Run(
+			name,
+			func(t *testing.T) {
+				err := testcase.f(digraph.New())
+
+				if testcase.expectsError && err == nil {
+					t.Errorf("expected error")
+				}
+				if !testcase.expectsError && err != nil {
+					t.Errorf("expected no error, got %+v", err)
+				}
+			},
+		)
+	}
+}

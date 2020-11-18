@@ -6,8 +6,9 @@ import "fmt"
 func New() Graph {
 	id := 0
 	return &graph{
-		id:    &id,
-		nodes: make(map[Node]struct{}),
+		id:                  &id,
+		nodes:               make(map[Node]struct{}),
+		originToDestination: make(map[Node]map[Node]struct{}),
 	}
 }
 
@@ -25,12 +26,21 @@ type Graph interface {
 	// Remove removes the given node from this graph. Returns an error if
 	// node is not contained in this graph.
 	Remove(Node) error
+
+	// Connect creates an edge from origin to destination. Returns an error if
+	// origin or destination or both are not contained in the graph. Also returns
+	// an error if there is already a connection from origin to destination (but
+	// not if there is a connection from destination to origin).
+	Connect(origin, destination Node) error
 }
 
 type graph struct {
 	id         *int
 	lastNodeID int
 	nodes      map[Node]struct{}
+
+	// originToDestination is a map from origins to destinations.
+	originToDestination map[Node]map[Node]struct{}
 }
 
 func (g *graph) NewNode() Node {
@@ -40,6 +50,7 @@ func (g *graph) NewNode() Node {
 		nodeID:  g.lastNodeID,
 	}
 	g.nodes[n] = struct{}{}
+	g.originToDestination[n] = make(map[Node]struct{})
 	return n
 }
 
@@ -61,6 +72,20 @@ func (g *graph) Remove(n Node) error {
 		return fmt.Errorf("graph did not contain given node")
 	}
 	delete(g.nodes, n)
+	return nil
+}
+
+func (g *graph) Connect(origin, destination Node) error {
+	if !g.Contains(origin) {
+		return fmt.Errorf("origin not contained in graph")
+	}
+	if !g.Contains(destination) {
+		return fmt.Errorf("destination not contained in graph")
+	}
+	if _, ok := g.originToDestination[origin][destination]; ok {
+		return fmt.Errorf("already connected")
+	}
+	g.originToDestination[origin][destination] = struct{}{}
 	return nil
 }
 
