@@ -33,3 +33,9 @@ func TestGraphNodes(t *testing.T) {
 		}
 	}
 }
+
+func TestGraphNodesFromDifferentGraphsAreDistinct(t *testing.T) {
+	if digraph.New().NewNode() == digraph.New().NewNode() {
+		t.Errorf("expected nodes created in two graphs to be distinct")
+	}
+}

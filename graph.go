@@ -2,7 +2,10 @@ package digraph
 
 // New creates an empty, mutable directed graph.
 func New() Graph {
-	return &graph{}
+	id := 0
+	return &graph{
+		id: &id,
+	}
 }
 
 // Graph represents a directed graph.
@@ -15,6 +18,7 @@ type Graph interface {
 }
 
 type graph struct {
+	id         *int
 	lastNodeID int
 	nodes      []Node
 }
@@ -22,7 +26,8 @@ type graph struct {
 func (g *graph) NewNode() Node {
 	g.lastNodeID++
 	n := node{
-		nodeID: g.lastNodeID,
+		graphID: g.id,
+		nodeID:  g.lastNodeID,
 	}
 	g.nodes = append(g.nodes, n)
 	return n
@@ -39,7 +44,8 @@ type Node interface {
 }
 
 type node struct {
-	nodeID int
+	graphID *int
+	nodeID  int
 }
 
 func (n node) internal() {}
