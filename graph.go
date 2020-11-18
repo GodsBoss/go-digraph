@@ -4,7 +4,8 @@ import (
 	"fmt"
 )
 
-// New creates an empty, mutable directed graph.
+// New creates an empty, mutable directed graph. That graph is not safe for
+// concurrent writes or read/write. It is safe for concurrent reads.
 func New() Graph {
 	id := 0
 	return &graph{
