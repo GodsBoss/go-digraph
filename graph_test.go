@@ -31,7 +31,7 @@ func TestGraphNodes(t *testing.T) {
 			}
 		}
 		if !found {
-			t.Errorf("node with index %d was created, but cannot be found in graph's nodes", i)
+			t.Errorf("node %+v (index %d) was created from %+v, but cannot be found in graph's nodes", addedNodes[i], i, g)
 		}
 	}
 }
