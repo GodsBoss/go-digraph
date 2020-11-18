@@ -4,7 +4,8 @@ package digraph
 func New() Graph {
 	id := 0
 	return &graph{
-		id: &id,
+		id:    &id,
+		nodes: make(map[Node]struct{}),
 	}
 }
 
@@ -23,7 +24,7 @@ type Graph interface {
 type graph struct {
 	id         *int
 	lastNodeID int
-	nodes      []Node
+	nodes      map[Node]struct{}
 }
 
 func (g *graph) NewNode() Node {
@@ -32,21 +33,21 @@ func (g *graph) NewNode() Node {
 		graphID: g.id,
 		nodeID:  g.lastNodeID,
 	}
-	g.nodes = append(g.nodes, n)
+	g.nodes[n] = struct{}{}
 	return n
 }
 
 func (g *graph) Nodes() []Node {
-	return g.nodes
+	nodes := make([]Node, 0, len(g.nodes))
+	for n := range g.nodes {
+		nodes = append(nodes, n)
+	}
+	return nodes
 }
 
 func (g *graph) Contains(n Node) bool {
-	for i := range g.nodes {
-		if g.nodes[i] == n {
-			return true
-		}
-	}
-	return false
+	_, ok := g.nodes[n]
+	return ok
 }
 
 // Node is a node of a directed graph. It is a value object. Can be used as
