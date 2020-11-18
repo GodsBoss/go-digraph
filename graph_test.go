@@ -86,6 +86,9 @@ func TestRemoveNodes(t *testing.T) {
 	n1b := g1.NewNode()
 	g1.Remove(n1b)
 	n2 := g2.NewNode()
+	ne1 := g1.NewNode()
+	ne2 := g1.NewNode()
+	g1.Connect(ne1, ne2)
 
 	testcases := []struct {
 		graph        digraph.Graph
@@ -97,6 +100,8 @@ func TestRemoveNodes(t *testing.T) {
 		{g1, "g1", n1a, "n1a", false},
 		{g1, "g1", n1b, "n1b", true},
 		{g1, "g1", n2, "n2", true},
+		{g1, "g1", ne1, "ne1", true},
+		{g1, "g1", ne2, "ne2", true},
 	}
 
 	for i := range testcases {

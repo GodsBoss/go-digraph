@@ -11,6 +11,7 @@ func New() Graph {
 		id:                  &id,
 		nodes:               make(map[Node]struct{}),
 		originToDestination: make(map[Node]map[Node]struct{}),
+		destinationToOrigin: make(map[Node]map[Node]struct{}),
 	}
 }
 
@@ -50,6 +51,9 @@ type graph struct {
 
 	// originToDestination is a map from origins to destinations.
 	originToDestination map[Node]map[Node]struct{}
+
+	// destinationToOrigin is a map from destinations to origins.
+	destinationToOrigin map[Node]map[Node]struct{}
 }
 
 func (g *graph) NewNode() Node {
@@ -60,6 +64,7 @@ func (g *graph) NewNode() Node {
 	}
 	g.nodes[n] = struct{}{}
 	g.originToDestination[n] = make(map[Node]struct{})
+	g.destinationToOrigin[n] = make(map[Node]struct{})
 	return n
 }
 
@@ -80,6 +85,12 @@ func (g *graph) Remove(n Node) error {
 	if !g.Contains(n) {
 		return fmt.Errorf("graph did not contain given node")
 	}
+	if len(g.originToDestination[n]) > 0 {
+		return fmt.Errorf("cannot remove node still connected")
+	}
+	if len(g.destinationToOrigin[n]) > 0 {
+		return fmt.Errorf("cannot remove node still connected")
+	}
 	delete(g.nodes, n)
 	return nil
 }
@@ -95,6 +106,7 @@ func (g *graph) Connect(origin, destination Node) error {
 		return fmt.Errorf("already connected")
 	}
 	g.originToDestination[origin][destination] = struct{}{}
+	g.destinationToOrigin[destination][origin] = struct{}{}
 	return nil
 }
 
@@ -109,6 +121,7 @@ func (g *graph) Disconnect(origin, destination Node) error {
 		return fmt.Errorf("not connected")
 	}
 	delete(g.originToDestination[origin], destination)
+	delete(g.destinationToOrigin[destination], origin)
 	return nil
 }
 
