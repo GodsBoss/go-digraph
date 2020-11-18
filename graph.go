@@ -1,5 +1,7 @@
 package digraph
 
+import "fmt"
+
 // New creates an empty, mutable directed graph.
 func New() Graph {
 	id := 0
@@ -19,6 +21,10 @@ type Graph interface {
 
 	// Contains checks wether node is contained in this graph.
 	Contains(Node) bool
+
+	// Remove removes the given node from this graph. Returns an error if
+	// node is not contained in this graph.
+	Remove(Node) error
 }
 
 type graph struct {
@@ -48,6 +54,14 @@ func (g *graph) Nodes() []Node {
 func (g *graph) Contains(n Node) bool {
 	_, ok := g.nodes[n]
 	return ok
+}
+
+func (g *graph) Remove(n Node) error {
+	if !g.Contains(n) {
+		return fmt.Errorf("graph did not contain given node")
+	}
+	delete(g.nodes, n)
+	return nil
 }
 
 // Node is a node of a directed graph. It is a value object. Can be used as

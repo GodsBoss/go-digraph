@@ -46,8 +46,11 @@ func TestGraphsCheckWetherTheyContainNodes(t *testing.T) {
 	g1 := digraph.New()
 	g2 := digraph.New()
 
-	n1 := g1.NewNode()
+	n1a := g1.NewNode()
+	n1b := g1.NewNode()
 	n2 := g2.NewNode()
+
+	_ = g1.Remove(n1b)
 
 	testcases := []struct {
 		graph          digraph.Graph
@@ -56,8 +59,9 @@ func TestGraphsCheckWetherTheyContainNodes(t *testing.T) {
 		nodeName       string
 		expectedResult bool
 	}{
-		{g1, "g1", n1, "n1", true},
+		{g1, "g1", n1a, "n1a", true},
 		{g1, "g1", n2, "n2", false},
+		{g1, "g1", n1b, "n1b", false},
 	}
 
 	for i := range testcases {
@@ -69,6 +73,45 @@ func TestGraphsCheckWetherTheyContainNodes(t *testing.T) {
 
 				if actualResult != testcase.expectedResult {
 					t.Errorf("expected %t", testcase.expectedResult)
+				}
+			},
+		)
+	}
+}
+
+func TestRemoveNodes(t *testing.T) {
+	g1 := digraph.New()
+	g2 := digraph.New()
+
+	n1a := g1.NewNode()
+	n1b := g1.NewNode()
+	g1.Remove(n1b)
+	n2 := g2.NewNode()
+
+	testcases := []struct {
+		graph        digraph.Graph
+		graphName    string
+		node         digraph.Node
+		nodeName     string
+		expectsError bool
+	}{
+		{g1, "g1", n1a, "n1a", false},
+		{g1, "g1", n1b, "n1b", true},
+		{g1, "g1", n2, "n2", true},
+	}
+
+	for i := range testcases {
+		testcase := testcases[i]
+		t.Run(
+			fmt.Sprintf("remove %s from %s", testcase.node, testcase.graph),
+			func(t *testing.T) {
+				err := testcase.graph.Remove(testcase.node)
+
+				if testcase.expectsError && err == nil {
+					t.Errorf("expected error")
+				}
+				if !testcase.expectsError && err != nil {
+					t.Errorf("expected no error, got %+v", err)
 				}
 			},
 		)
