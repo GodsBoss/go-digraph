@@ -1,6 +1,8 @@
 package digraph
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // New creates an empty, mutable directed graph.
 func New() Graph {
