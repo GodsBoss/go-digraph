@@ -92,6 +92,8 @@ func (g *graph) Remove(n Node) error {
 		return fmt.Errorf("cannot remove node still connected")
 	}
 	delete(g.nodes, n)
+	delete(g.originToDestination, n)
+	delete(g.destinationToOrigin, n)
 	return nil
 }
 
