@@ -59,16 +59,6 @@ func (prov originDestinationProvider) Destination() Node {
 	return prov.destination
 }
 
-type nodesAlreadyConnectedError struct {
-	originDestinationProvider
-}
-
-func (err nodesAlreadyConnectedError) Error() string {
-	return "nodes already connected"
-}
-
-func (err nodesAlreadyConnectedError) AlreadyConnected() {}
-
 // OriginDestinationProvider exposes origin and destination. It is implemented
 // by some errors regarding connecting or disconnecting nodes.
 type OriginDestinationProvider interface {
@@ -78,6 +68,16 @@ type OriginDestinationProvider interface {
 	// Destination returns the destination node.
 	Destination() Node
 }
+
+type nodesAlreadyConnectedError struct {
+	originDestinationProvider
+}
+
+func (err nodesAlreadyConnectedError) Error() string {
+	return "nodes already connected"
+}
+
+func (err nodesAlreadyConnectedError) AlreadyConnected() {}
 
 // AlreadyConnected is a marker interface implemented by errors caused by
 // connecting already connected nodes.
