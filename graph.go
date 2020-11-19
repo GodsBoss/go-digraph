@@ -7,9 +7,8 @@ import (
 // New creates an empty, mutable directed graph. That graph is not safe for
 // concurrent writes or read/write. It is safe for concurrent reads.
 func New() Graph {
-	id := 0
 	return &graph{
-		id:                  &id,
+		nodeProvider:        newNodeProvider(),
 		nodes:               make(map[Node]struct{}),
 		originToDestination: make(map[Node]map[Node]struct{}),
 		destinationToOrigin: make(map[Node]map[Node]struct{}),
@@ -54,9 +53,10 @@ type Graph interface {
 }
 
 type graph struct {
-	id         *int
-	lastNodeID int
-	nodes      map[Node]struct{}
+	// nodeProvider creates new, unique nodes.
+	nodeProvider func() Node
+
+	nodes map[Node]struct{}
 
 	// originToDestination is a map from origins to destinations.
 	originToDestination map[Node]map[Node]struct{}
@@ -66,11 +66,7 @@ type graph struct {
 }
 
 func (g *graph) NewNode() Node {
-	g.lastNodeID++
-	n := node{
-		graphID: g.id,
-		nodeID:  g.lastNodeID,
-	}
+	n := g.nodeProvider()
 	g.nodes[n] = struct{}{}
 	g.originToDestination[n] = make(map[Node]struct{})
 	g.destinationToOrigin[n] = make(map[Node]struct{})
@@ -226,11 +222,24 @@ type Node interface {
 }
 
 type node struct {
-	graphID *int
-	nodeID  int
+	providerID *int
+	nodeID     int
 }
 
 func (n node) internal() {}
+
+func newNodeProvider() func() Node {
+	providerID := 0
+	lastNodeID := 0
+
+	return func() Node {
+		lastNodeID++
+		return node{
+			providerID: &providerID,
+			nodeID:     lastNodeID,
+		}
+	}
+}
 
 // Edge is a connection from an origin node to a destination node.
 type Edge struct {
