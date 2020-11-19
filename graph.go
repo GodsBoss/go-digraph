@@ -171,7 +171,7 @@ func (g *graph) PointedToFrom(n Node) ([]Node, error) {
 		return nil, err
 	}
 	destinations := make([]Node, 0, len(g.originToDestination[n]))
-	for destination := range g.originToDestination {
+	for destination := range g.originToDestination[n] {
 		destinations = append(destinations, destination)
 	}
 	return destinations, nil
