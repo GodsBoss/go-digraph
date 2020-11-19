@@ -100,3 +100,35 @@ func IsNodesAlreadyConnectedError(err error) (bool, OriginDestinationProvider) {
 	}
 	return false, nil
 }
+
+type nodesNotConnectedError struct {
+	originDestinationProvider
+}
+
+func (err nodesNotConnectedError) Error() string {
+	return "nodes not connected"
+}
+
+func (err nodesNotConnectedError) NotConnected() {}
+
+// NotConnected is a marker interface implemented by errors caused by trying to
+// disconnected nodes not connected.
+type NotConnected interface {
+	OriginDestinationProvider
+
+	// NotConnected is for marking and does nothing.
+	NotConnected()
+}
+
+// IsNodesNotConnectedError checks wether an error was caused by attempting to
+// disconnected two nodes which were not connected. If true, the offending
+// origin and destination are returned as well.
+func IsNodesNotConnectedError(err error) (bool, OriginDestinationProvider) {
+	if notConnected, ok := err.(NotConnected); ok {
+		return true, originDestinationProvider{
+			origin:      notConnected.Origin(),
+			destination: notConnected.Destination(),
+		}
+	}
+	return false, nil
+}

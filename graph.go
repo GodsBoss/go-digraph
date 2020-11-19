@@ -137,7 +137,12 @@ func (g *graph) Disconnect(origin, destination Node) error {
 		return err
 	}
 	if _, ok := g.originToDestination[origin][destination]; !ok {
-		return fmt.Errorf("not connected")
+		return nodesNotConnectedError{
+			originDestinationProvider{
+				origin:      origin,
+				destination: destination,
+			},
+		}
 	}
 	delete(g.originToDestination[origin], destination)
 	delete(g.destinationToOrigin[destination], origin)
