@@ -121,8 +121,10 @@ func (g *graph) Connect(origin, destination Node) error {
 	}
 	if _, ok := g.originToDestination[origin][destination]; ok {
 		return nodesAlreadyConnectedError{
-			origin:      origin,
-			destination: destination,
+			originDestinationProvider{
+				origin:      origin,
+				destination: destination,
+			},
 		}
 	}
 	g.originToDestination[origin][destination] = struct{}{}

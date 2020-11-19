@@ -46,21 +46,25 @@ func IsNodesNotContainedError(err error) (bool, []Node) {
 	return false, nil
 }
 
-type nodesAlreadyConnectedError struct {
+type originDestinationProvider struct {
 	origin      Node
 	destination Node
 }
 
+func (prov originDestinationProvider) Origin() Node {
+	return prov.origin
+}
+
+func (prov originDestinationProvider) Destination() Node {
+	return prov.destination
+}
+
+type nodesAlreadyConnectedError struct {
+	originDestinationProvider
+}
+
 func (err nodesAlreadyConnectedError) Error() string {
 	return "nodes already connected"
-}
-
-func (err nodesAlreadyConnectedError) Origin() Node {
-	return err.origin
-}
-
-func (err nodesAlreadyConnectedError) Destination() Node {
-	return err.destination
 }
 
 func (err nodesAlreadyConnectedError) AlreadyConnected() {}
