@@ -90,9 +90,22 @@ func (g *graph) Contains(n Node) bool {
 	return ok
 }
 
+func (g *graph) nodesNotContainedError(ns ...Node) error {
+	notContained := make([]Node, 0)
+	for i := range ns {
+		if !g.Contains(ns[i]) {
+			notContained = append(notContained, ns[i])
+		}
+	}
+	if len(notContained) > 0 {
+		return newNodesNotContainedError(notContained...)
+	}
+	return nil
+}
+
 func (g *graph) Remove(n Node) error {
-	if !g.Contains(n) {
-		return fmt.Errorf("graph did not contain given node")
+	if err := g.nodesNotContainedError(n); err != nil {
+		return err
 	}
 	if len(g.originToDestination[n]) > 0 {
 		return fmt.Errorf("cannot remove node still connected")
@@ -107,11 +120,8 @@ func (g *graph) Remove(n Node) error {
 }
 
 func (g *graph) Connect(origin, destination Node) error {
-	if !g.Contains(origin) {
-		return fmt.Errorf("origin not contained in graph")
-	}
-	if !g.Contains(destination) {
-		return fmt.Errorf("destination not contained in graph")
+	if err := g.nodesNotContainedError(origin, destination); err != nil {
+		return err
 	}
 	if _, ok := g.originToDestination[origin][destination]; ok {
 		return fmt.Errorf("already connected")
@@ -122,11 +132,8 @@ func (g *graph) Connect(origin, destination Node) error {
 }
 
 func (g *graph) Disconnect(origin, destination Node) error {
-	if !g.Contains(origin) {
-		return fmt.Errorf("origin not contained in graph")
-	}
-	if !g.Contains(destination) {
-		return fmt.Errorf("destination not contained in graph")
+	if err := g.nodesNotContainedError(origin, destination); err != nil {
+		return err
 	}
 	if _, ok := g.originToDestination[origin][destination]; !ok {
 		return fmt.Errorf("not connected")
@@ -153,8 +160,8 @@ func (g *graph) Edges() []Edge {
 }
 
 func (g *graph) PointingTo(n Node) ([]Node, error) {
-	if !g.Contains(n) {
-		return nil, fmt.Errorf("node not contained in graph")
+	if err := g.nodesNotContainedError(n); err != nil {
+		return nil, err
 	}
 	origins := make([]Node, 0, len(g.destinationToOrigin[n]))
 	for origin := range g.destinationToOrigin[n] {
@@ -164,14 +171,52 @@ func (g *graph) PointingTo(n Node) ([]Node, error) {
 }
 
 func (g *graph) PointedToFrom(n Node) ([]Node, error) {
-	if !g.Contains(n) {
-		return nil, fmt.Errorf("node not contained in graph")
+	if err := g.nodesNotContainedError(n); err != nil {
+		return nil, err
 	}
 	destinations := make([]Node, 0, len(g.originToDestination[n]))
 	for destination := range g.originToDestination {
 		destinations = append(destinations, destination)
 	}
 	return destinations, nil
+}
+
+type nodesNotContainedError []Node
+
+func newNodesNotContainedError(nodes ...Node) error {
+	return nodesNotContainedError(nodes)
+}
+
+func (err nodesNotContainedError) Error() string {
+	if len(err) > 1 {
+		return "nodes not contained in graph"
+	}
+	return "node not contained in graph"
+}
+
+func (err nodesNotContainedError) nodesNotContained() []Node {
+	nodes := make([]Node, len(err))
+	copy(nodes, err)
+	return nodes
+}
+
+// nodesNotContainedProvider is a marker interface for errors returned by a graph
+// caused by providing nodes not found in the graph.
+type nodesNotContainedProvider interface {
+	// nodesNotContained returns the nodes causing the error. The returned slice
+	// must be safe for changes.
+	nodesNotContained() []Node
+}
+
+// IsNodesNotContainedError checks wether an error was caused by providing nodes not
+// contained in a graph. If true, the nodes are returned, too. The returned
+// slice is safe for changes, i.e. even after changing it, calling the function
+// with the same error again will return the same nodes as before.
+func IsNodesNotContainedError(err error) (bool, []Node) {
+	if nodes, ok := err.(nodesNotContainedProvider); ok {
+		return true, nodes.nodesNotContained()
+	}
+	return false, nil
 }
 
 // Node is a node of a directed graph. It is a value object. Can be used as
