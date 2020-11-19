@@ -7,7 +7,7 @@ import (
 	"github.com/GodsBoss/go-digraph/operations"
 )
 
-func ExampleCopy() {
+func ExampleDuplicated() {
 	original := digraph.New()
 
 	a, b, c := original.NewNode(), original.NewNode(), original.NewNode()
@@ -21,7 +21,7 @@ func ExampleCopy() {
 	original.Connect(a, b)
 	original.Connect(b, c)
 
-	duplicate, originalToCopy := operations.Copy(original)
+	duplicate, originalToCopy := operations.Duplicated(original)
 
 	// A mapping as returned by Copy() maps nodes from the original to the clone.
 	// We need the opposite, too, so we invert it.

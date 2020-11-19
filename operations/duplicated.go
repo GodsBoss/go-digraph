@@ -4,9 +4,9 @@ import (
 	"github.com/GodsBoss/go-digraph"
 )
 
-// Copy duplicates a graph. It returns the duplicate graph and a mapping from
+// Duplicated duplicates a graph. It returns the duplicate graph and a mapping from
 // nodes of the original graph to nodes of the duplicate.
-func Copy(original digraph.Graph) (digraph.Graph, map[digraph.Node]digraph.Node) {
+func Duplicated(original digraph.Graph) (digraph.Graph, map[digraph.Node]digraph.Node) {
 	duplicate := digraph.New()
 	mapping := make(map[digraph.Node]digraph.Node)
 
