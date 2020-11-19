@@ -94,7 +94,7 @@ func (g *graph) nodesNotContainedError(ns ...Node) error {
 		}
 	}
 	if len(notContained) > 0 {
-		return newNodesNotContainedError(notContained...)
+		return NewNodesNotContainedError(notContained...)
 	}
 	return nil
 }
