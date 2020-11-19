@@ -65,14 +65,20 @@ func (err nodesAlreadyConnectedError) Destination() Node {
 
 func (err nodesAlreadyConnectedError) AlreadyConnected() {}
 
+// OriginDestinationProvider exposes origin and destination. It is implemented
+// by some errors regarding connecting or disconnecting nodes.
+type OriginDestinationProvider interface {
+	// Origin returns the origin node.
+	Origin() Node
+
+	// Destination returns the destination node.
+	Destination() Node
+}
+
 // AlreadyConnected is a marker interface implemented by errors caused by
 // connecting already connected nodes.
 type AlreadyConnected interface {
-	// Origin returns the origin node of the attempt.
-	Origin() Node
-
-	// Destination returns the destination node of the attempt.
-	Destination() Node
+	OriginDestinationProvider
 
 	// AlreadyConnected is for marking and does nothing.
 	AlreadyConnected()
