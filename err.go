@@ -45,3 +45,49 @@ func IsNodesNotContainedError(err error) (bool, []Node) {
 	}
 	return false, nil
 }
+
+type nodesAlreadyConnectedError struct {
+	origin      Node
+	destination Node
+}
+
+func (err nodesAlreadyConnectedError) Error() string {
+	return "nodes already connected"
+}
+
+func (err nodesAlreadyConnectedError) Origin() Node {
+	return err.origin
+}
+
+func (err nodesAlreadyConnectedError) Destination() Node {
+	return err.destination
+}
+
+func (err nodesAlreadyConnectedError) AlreadyConnected() {}
+
+// AlreadyConnected is a marker interface implemented by errors caused by
+// connecting already connected nodes.
+type AlreadyConnected interface {
+	// Origin returns the origin node of the attempt.
+	Origin() Node
+
+	// Destination returns the destination node of the attempt.
+	Destination() Node
+
+	// AlreadyConnected is for marking and does nothing.
+	AlreadyConnected()
+}
+
+// IsNodesAlreadyConnectedError checks wether an error was caused by connecting
+// two already connected nodes. If true, the corresponding edge is returned as
+// well.
+// The edge is guaranteed to be safe for changes.
+func IsNodesAlreadyConnectedError(err error) (bool, *Edge) {
+	if alreadyConnected, ok := err.(AlreadyConnected); ok {
+		return true, &Edge{
+			Origin:      alreadyConnected.Origin(),
+			Destination: alreadyConnected.Destination(),
+		}
+	}
+	return false, nil
+}

@@ -120,7 +120,10 @@ func (g *graph) Connect(origin, destination Node) error {
 		return err
 	}
 	if _, ok := g.originToDestination[origin][destination]; ok {
-		return fmt.Errorf("already connected")
+		return nodesAlreadyConnectedError{
+			origin:      origin,
+			destination: destination,
+		}
 	}
 	g.originToDestination[origin][destination] = struct{}{}
 	g.destinationToOrigin[destination][origin] = struct{}{}
