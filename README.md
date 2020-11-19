@@ -1,6 +1,8 @@
 Directed Graph
 ==============
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/GodsBoss/go-digraph)](https://goreportcard.com/report/github.com/GodsBoss/go-digraph)
+
 Overview
 --------
 
