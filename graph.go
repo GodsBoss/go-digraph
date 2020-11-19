@@ -120,12 +120,7 @@ func (g *graph) Connect(origin, destination Node) error {
 		return err
 	}
 	if _, ok := g.originToDestination[origin][destination]; ok {
-		return nodesAlreadyConnectedError{
-			originDestinationProvider{
-				origin:      origin,
-				destination: destination,
-			},
-		}
+		return NewNodesAlreadyConnectedError(origin, destination)
 	}
 	g.originToDestination[origin][destination] = struct{}{}
 	g.destinationToOrigin[destination][origin] = struct{}{}
@@ -137,12 +132,7 @@ func (g *graph) Disconnect(origin, destination Node) error {
 		return err
 	}
 	if _, ok := g.originToDestination[origin][destination]; !ok {
-		return nodesNotConnectedError{
-			originDestinationProvider{
-				origin:      origin,
-				destination: destination,
-			},
-		}
+		return NewNodesNotConnectedError(origin, destination)
 	}
 	delete(g.originToDestination[origin], destination)
 	delete(g.destinationToOrigin[destination], origin)

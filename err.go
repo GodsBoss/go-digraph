@@ -69,6 +69,16 @@ type OriginDestinationProvider interface {
 	Destination() Node
 }
 
+// NewNodesAlreadyConnectedError creates a new error implementing AlreadyConnected.
+func NewNodesAlreadyConnectedError(origin, destination Node) error {
+	return nodesAlreadyConnectedError{
+		originDestinationProvider{
+			origin:      origin,
+			destination: destination,
+		},
+	}
+}
+
 type nodesAlreadyConnectedError struct {
 	originDestinationProvider
 }
@@ -99,6 +109,16 @@ func IsNodesAlreadyConnectedError(err error) (bool, OriginDestinationProvider) {
 		}
 	}
 	return false, nil
+}
+
+// NewNodesNotConnectedError creates an error implementing NotConnected.
+func NewNodesNotConnectedError(origin, destination Node) error {
+	return nodesNotConnectedError{
+		originDestinationProvider{
+			origin:      origin,
+			destination: destination,
+		},
+	}
 }
 
 type nodesNotConnectedError struct {
