@@ -8,7 +8,7 @@ import (
 // concurrent writes or read/write. It is safe for concurrent reads.
 func New() Graph {
 	return &graph{
-		nodeProvider:        newNodeProvider(),
+		nodeProvider:        NewNodeProvider(),
 		nodes:               make(map[Node]struct{}),
 		originToDestination: make(map[Node]map[Node]struct{}),
 		destinationToOrigin: make(map[Node]map[Node]struct{}),
@@ -228,7 +228,12 @@ type node struct {
 
 func (n node) internal() {}
 
-func newNodeProvider() func() Node {
+// NewNodeProvider creates a function for creating unique nodes, i.e. nodes
+// created by any function are guaranteed to never be equal to any node created
+// by any function.
+//
+// You probably don't need this except when implementing your own Graph type.
+func NewNodeProvider() func() Node {
 	providerID := 0
 	lastNodeID := 0
 
