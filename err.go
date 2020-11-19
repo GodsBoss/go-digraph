@@ -89,14 +89,13 @@ type AlreadyConnected interface {
 }
 
 // IsNodesAlreadyConnectedError checks wether an error was caused by connecting
-// two already connected nodes. If true, the corresponding edge is returned as
-// well.
-// The edge is guaranteed to be safe for changes.
-func IsNodesAlreadyConnectedError(err error) (bool, *Edge) {
+// two already connected nodes. If true, the corresponding origin and destination
+// are returned as well.
+func IsNodesAlreadyConnectedError(err error) (bool, OriginDestinationProvider) {
 	if alreadyConnected, ok := err.(AlreadyConnected); ok {
-		return true, &Edge{
-			Origin:      alreadyConnected.Origin(),
-			Destination: alreadyConnected.Destination(),
+		return true, originDestinationProvider{
+			origin:      alreadyConnected.Origin(),
+			destination: alreadyConnected.Destination(),
 		}
 	}
 	return false, nil

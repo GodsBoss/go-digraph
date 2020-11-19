@@ -23,7 +23,7 @@ func ExampleIsNodesAlreadyConnectedError() {
 	ok, edge := digraph.IsNodesAlreadyConnectedError(err)
 	if ok {
 		fmt.Println("error caused by connecting two already connected nodes")
-		fmt.Printf("tried connecting from %s to %s\n", names[edge.Origin], names[edge.Destination])
+		fmt.Printf("tried connecting from %s to %s\n", names[edge.Origin()], names[edge.Destination()])
 	}
 
 	if ok, _ := digraph.IsNodesAlreadyConnectedError(fmt.Errorf("some other error")); !ok {
