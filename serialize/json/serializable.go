@@ -19,6 +19,9 @@ type Serializable struct {
 // MarshalJSON lets Serializable implement json.Marshaler.
 func (s *Serializable) MarshalJSON() ([]byte, error) {
 	dg := s.Graph
+	if dg == nil {
+		dg = digraph.New()
+	}
 	j := &jsonGraph{
 		Nodes: make(map[string][]string),
 	}

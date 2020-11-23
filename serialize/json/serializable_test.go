@@ -29,3 +29,11 @@ func TestUnmarshalErrors(t *testing.T) {
 		)
 	}
 }
+
+func TestZeroValueCanBeMarshaled(t *testing.T) {
+	j := &jsonGraph.Serializable{}
+	_, err := json.Marshal(j)
+	if err != nil {
+		t.Errorf("could not marshal zero value: %+v", err)
+	}
+}
