@@ -23,6 +23,10 @@ func (s *Serializable) MarshalJSON() ([]byte, error) {
 	if dg == nil {
 		dg = digraph.New()
 	}
+	values := s.Values
+	if values == nil {
+		values = make(map[digraph.Node]interface{})
+	}
 	j := &jsonGraph{
 		Nodes:  make(map[string][]string),
 		Values: make(map[string]interface{}),
@@ -33,10 +37,8 @@ func (s *Serializable) MarshalJSON() ([]byte, error) {
 		nodeKey := strconv.Itoa(i + 1)
 		j.Nodes[nodeKey] = make([]string, 0)
 		nodeKeyMapping[nodes[i]] = nodeKey
-		if s.Values != nil {
-			if val, ok := s.Values[nodes[i]]; ok {
-				j.Values[nodeKey] = val
-			}
+		if val, ok := values[nodes[i]]; ok {
+			j.Values[nodeKey] = val
 		}
 	}
 	edges := dg.Edges()
