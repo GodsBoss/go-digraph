@@ -13,7 +13,10 @@ import (
 // Serializable is a wrapper type for a directional graph which can be marshaled
 // into JSON and unmarshaled back.
 type Serializable struct {
-	Graph  digraph.Graph
+	Graph digraph.Graph
+
+	// Values stores arbitrary values alongside the graph. It must not contain any
+	// nodes not contained in the graph.
 	Values map[digraph.Node]interface{}
 }
 
