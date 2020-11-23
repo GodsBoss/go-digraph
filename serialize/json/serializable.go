@@ -27,6 +27,11 @@ func (s *Serializable) MarshalJSON() ([]byte, error) {
 	if values == nil {
 		values = make(map[digraph.Node]interface{})
 	}
+	for n := range values {
+		if !dg.Contains(n) {
+			return nil, fmt.Errorf("values contains node not found in graph")
+		}
+	}
 	j := &jsonGraph{
 		Nodes:  make(map[string][]string),
 		Values: make(map[string]interface{}),
