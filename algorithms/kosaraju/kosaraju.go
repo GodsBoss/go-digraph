@@ -6,6 +6,9 @@ import (
 
 // StronglyConnectedComponents finds the strongly connected components via Kosaraju's algorithm.
 // See https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm for details.
+//
+// The return value is a slice of strongly connected components, each of which
+// is a slice of nodes together forming that component.
 func StronglyConnectedComponents(g digraph.Graph) [][]digraph.Node {
 	vertices := g.Nodes()
 	L := make([]digraph.Node, 0)
