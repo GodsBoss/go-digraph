@@ -1,11 +1,11 @@
 package json_test
 
 import (
+	"github.com/GodsBoss/go-digraph"
 	jsonGraph "github.com/GodsBoss/go-digraph/serialize/json"
 
 	"encoding/json"
 	"fmt"
-	"sort"
 )
 
 func ExampleSerializable_UnmarshalJSON() {
@@ -15,7 +15,12 @@ func ExampleSerializable_UnmarshalJSON() {
       "1": ["2"],
       "2": ["3"],
       "3": []
-    }
+    },
+		"values": {
+			"1": "a",
+			"2": "b",
+			"3": "c"
+		}
   }
   `
 
@@ -31,7 +36,7 @@ func ExampleSerializable_UnmarshalJSON() {
 	nodes := dg.Nodes()
 	fmt.Printf("%d nodes found.\n", len(nodes))
 
-	found := make([]int, 3)
+	found := make(map[int]digraph.Node)
 
 	for i := range nodes {
 		ingoing, _ := dg.PointingTo(nodes[i])
@@ -39,23 +44,21 @@ func ExampleSerializable_UnmarshalJSON() {
 
 		switch true {
 		case len(ingoing) == 0 && len(outgoing) == 1:
-			found[i] = 1
+			found[1] = nodes[i]
 		case len(ingoing) == 1 && len(outgoing) == 1:
-			found[i] = 2
+			found[2] = nodes[i]
 		case len(ingoing) == 1 && len(outgoing) == 0:
-			found[i] = 3
+			found[3] = nodes[i]
 		}
 	}
 
-	sort.Ints(found)
-
-	for i := range found {
-		fmt.Printf("Found node '%d'.\n", found[i])
+	for i := 1; i <= 3; i++ {
+		fmt.Printf("Found node '%s'.\n", s.Values[found[i]])
 	}
 
 	// Output:
 	// 3 nodes found.
-	// Found node '1'.
-	// Found node '2'.
-	// Found node '3'.
+	// Found node 'a'.
+	// Found node 'b'.
+	// Found node 'c'.
 }

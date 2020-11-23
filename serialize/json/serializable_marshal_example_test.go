@@ -19,28 +19,25 @@ func ExampleSerializable_MarshalJSON() {
 
 	s := &jsonGraph.Serializable{
 		Graph: g,
+		Values: map[digraph.Node]interface{}{
+			n1: "a",
+			n2: "b",
+			n3: "c",
+		},
 	}
 
 	data, _ := json.Marshal(s)
 
 	myGraph := struct {
-		M map[string][]string `json:"nodes"`
+		M map[string][]string    `json:"nodes"`
+		V map[string]interface{} `json:"values"`
 	}{}
 
 	_ = json.Unmarshal(data, &myGraph)
 
 	nameMapping := make(map[string]string)
-
-	keys := []string{"1", "2", "3"}
-	for _, key := range keys {
-		switch len(myGraph.M[key]) {
-		case 2:
-			nameMapping["a"] = key
-		case 1:
-			nameMapping["b"] = key
-		case 0:
-			nameMapping["c"] = key
-		}
+	for nodeKey, value := range myGraph.V {
+		nameMapping[value.(string)] = nodeKey
 	}
 
 	invertedNameMapping := make(map[string]string)
