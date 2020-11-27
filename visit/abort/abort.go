@@ -1,3 +1,5 @@
+// Package abort complements the visit package by providing means to abort
+// traversal.
 package abort
 
 import (
