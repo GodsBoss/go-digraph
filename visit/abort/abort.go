@@ -37,10 +37,34 @@ func AfterMaximumExceeded(n int) Condition {
 	return func() error {
 		current++
 		if current > n {
-			return fmt.Errorf("maximum exceeded")
+			return maximumExceededError(n)
 		}
 		return nil
 	}
+}
+
+type maximumExceeded interface {
+	maximum() int
+}
+
+type maximumExceededError int
+
+func (err maximumExceededError) Error() string {
+	return fmt.Sprintf("node visitation maximum of %d exceeded", err.maximum())
+}
+
+func (err maximumExceededError) maximum() int {
+	return int(err)
+}
+
+// IsMaximumExceededError checks wether an error was caused by exceeding the
+// maximum number of nodes to visit when using AfterMaximumExceeded() as abort
+// condition.
+func IsMaximumExceededError(err error) (ok bool, maximum int) {
+	if mErr, ok := err.(maximumExceededError); ok {
+		return true, mErr.maximum()
+	}
+	return false, 0
 }
 
 // OnContextCancelation is a condition which fails if a context has been canceled.
