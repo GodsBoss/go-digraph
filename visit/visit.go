@@ -50,3 +50,8 @@ type Strategy func(current digraph.Node, rest []digraph.Node) ([]digraph.Node, e
 
 // CreateStrategy takes a graph and creates a strategy for that graph.
 type CreateStrategy func(g digraph.Graph) Strategy
+
+// Func is usually provided by the caller of the visiting functions. It is
+// called for every node visited. If returning false and/or an error, the
+// visiting stops (and the error, if non-nil, is returned).
+type Func func(node digraph.Node) (bool, error)
