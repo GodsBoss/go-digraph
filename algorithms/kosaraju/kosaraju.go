@@ -1,11 +1,14 @@
+// Package kosaraju provides Kosaraju's algorithm for finding a directed graph's
+// strongly connected components.
+//
+// For more details, see: https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm
 package kosaraju
 
 import (
 	"github.com/GodsBoss/go-digraph"
 )
 
-// StronglyConnectedComponents finds the strongly connected components via Kosaraju's algorithm.
-// See https://en.wikipedia.org/wiki/Kosaraju%27s_algorithm for details.
+// StronglyConnectedComponents finds strongly connected components.
 //
 // The return value is a slice of strongly connected components, each of which
 // is a slice of nodes together forming that component.
