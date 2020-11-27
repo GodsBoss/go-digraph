@@ -93,11 +93,3 @@ func TestStrategyFails(t *testing.T) {
 		t.Errorf("expected error to be %+v, but got %+v", inputErr, outputErr)
 	}
 }
-
-func createFunc(ok bool, err error) (visit.Func, map[digraph.Node]struct{}) {
-	visitedNodes := make(map[digraph.Node]struct{})
-	return func(node digraph.Node) (bool, error) {
-		visitedNodes[node] = struct{}{}
-		return ok, err
-	}, visitedNodes
-}
