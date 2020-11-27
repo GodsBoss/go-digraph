@@ -1,3 +1,4 @@
+// Package visit contains utilities for traversing a graph.
 package visit
 
 import (
