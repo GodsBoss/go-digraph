@@ -8,7 +8,8 @@ import (
 // https://en.wikipedia.org/wiki/Depth-first_search
 // This strategy will visit the same node twice or more if the corresponding
 // connections exist. It may also go into an infinite loop if the graph contains
-// a cycle reachable from the start node given to Graph().
+// a cycle reachable from the start node given to Graph(). Use strategy modifiers
+// like Once() to avoid that.
 func DepthFirst(g digraph.Graph) Strategy {
 	return func(current digraph.Node, rest []digraph.Node) ([]digraph.Node, error) {
 		outgoing, _ := g.PointedToFrom(current)
@@ -21,7 +22,8 @@ func DepthFirst(g digraph.Graph) Strategy {
 // https://en.wikipedia.org/wiki/Breadth-first_search
 // This strategy will visit the same node twice or more if the corresponding
 // connections exist. It may also go into an infinite loop if the graph contains
-// a cycle reachable from the start node given to Graph().
+// a cycle reachable from the start node given to Graph(). Use strategy modifiers
+// like Once() to avoid that.
 func BreadthFirst(g digraph.Graph) Strategy {
 	return func(current digraph.Node, rest []digraph.Node) ([]digraph.Node, error) {
 		outgoing, _ := g.PointedToFrom(current)
