@@ -47,6 +47,13 @@ func TestAddStringMappingErrs(t *testing.T) {
 				if node != n1 {
 					t.Errorf("expected n1 as node")
 				}
+        ok, s := uniquemappers.IsStringAlreadyTakenError(err)
+        if !ok {
+          t.Error("expected error to be caused by trying to map a string already mapped")
+        }
+        if s != "foo" {
+          t.Error("expected string to be 'foo'")
+        }
 			},
 		},
 		"fail (node exists)": {
@@ -63,6 +70,9 @@ func TestAddStringMappingErrs(t *testing.T) {
 				if node != n1 {
 					t.Errorf("expected n1 as node")
 				}
+        if ok, _ := uniquemappers.IsStringAlreadyTakenError(err); ok {
+          t.Errorf("expected error not to be caused by string already mapped")
+        }
 			},
 		},
 		"fail (string exists)": {
@@ -72,6 +82,16 @@ func TestAddStringMappingErrs(t *testing.T) {
 				if err == nil {
 					t.Fatal("expected error")
 				}
+        ok, s := uniquemappers.IsStringAlreadyTakenError(err)
+        if !ok {
+          t.Error("expected error to be caused by trying to map a string already mapped")
+        }
+        if s != "foo" {
+          t.Error("expected string to be 'foo'")
+        }
+        if ok, _ := uniquemappers.IsNodeAlreadyTakenError(err); ok {
+          t.Errorf("expected error not to be caused by node already mapped")
+        }
 			},
 		},
 	}

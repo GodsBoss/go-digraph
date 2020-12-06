@@ -68,13 +68,20 @@ type stringMapper struct {
 }
 
 func (m *stringMapper) Add(pair StringNodePair) error {
+	var existingNode digraph.Node
+	var existingString *string
 	if m.HasNode(pair.Node) {
-		return alreadyTakenError{
-			node: pair.Node,
-		}
+		existingNode = pair.Node
 	}
 	if m.HasString(pair.String) {
-		return fmt.Errorf("string already taken")
+		s := pair.String
+		existingString = &s
+	}
+	if existingNode != nil || existingString != nil {
+		return alreadyTakenError{
+			node: existingNode,
+			s:    existingString,
+		}
 	}
 	m.nodeToString[pair.Node] = pair.String
 	m.stringToNode[pair.String] = pair.Node
