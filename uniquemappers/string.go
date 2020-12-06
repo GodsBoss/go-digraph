@@ -69,7 +69,9 @@ type stringMapper struct {
 
 func (m *stringMapper) Add(pair StringNodePair) error {
 	if m.HasNode(pair.Node) {
-		return fmt.Errorf("node already taken")
+		return alreadyTakenError{
+			node: pair.Node,
+		}
 	}
 	if m.HasString(pair.String) {
 		return fmt.Errorf("string already taken")

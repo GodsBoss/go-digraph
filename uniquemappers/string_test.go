@@ -40,6 +40,13 @@ func TestAddStringMappingErrs(t *testing.T) {
         if err == nil {
           t.Fatal("expected error")
         }
+        ok, node := uniquemappers.IsNodeAlreadyTakenError(err)
+        if !ok {
+          t.Errorf("expected error to be caused by trying to map a node already mapped")
+        }
+        if node != n1 {
+          t.Errorf("expected n1 as node")
+        }
       },
 },
 		"fail (node exists)":   {
