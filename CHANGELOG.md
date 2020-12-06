@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- [serialize/json][./serialize/json] package documentation and examples.
+- [serialize/json](./serialize/json) package documentation and examples.
 
 ## 1.1.0
 
