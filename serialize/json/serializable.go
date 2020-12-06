@@ -11,7 +11,9 @@ import (
 )
 
 // Serializable is a wrapper type for a directional graph which can be marshaled
-// into JSON and unmarshaled back.
+// into JSON and unmarshaled back. The concrete serialization format used, e.g.
+// JSON keys and structures, is NOT part of the interface of the package. It may
+// change at any point in the future.
 type Serializable struct {
 	Graph digraph.Graph
 
