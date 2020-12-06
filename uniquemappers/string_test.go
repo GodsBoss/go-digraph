@@ -4,7 +4,7 @@ import (
 	"github.com/GodsBoss/go-digraph"
 	"github.com/GodsBoss/go-digraph/uniquemappers"
 
-  "sort"
+	"sort"
 	"testing"
 )
 
@@ -20,60 +20,60 @@ func TestAddStringMappingErrs(t *testing.T) {
 	)
 
 	testcases := map[string]struct {
-		node        digraph.Node
-		str         string
+		node     digraph.Node
+		str      string
 		checkErr func(*testing.T, error)
 	}{
-		"success":              {
-      n2,
-      "bar",
-      func(t *testing.T, err error){
-        if err != nil {
-          t.Errorf("expected no error, got %+v", err)
-        }
-      },
-    },
-		"fail (both exist)":    {
-      n1,
-      "foo",
-      func(t *testing.T, err error){
-        if err == nil {
-          t.Fatal("expected error")
-        }
-        ok, node := uniquemappers.IsNodeAlreadyTakenError(err)
-        if !ok {
-          t.Errorf("expected error to be caused by trying to map a node already mapped")
-        }
-        if node != n1 {
-          t.Errorf("expected n1 as node")
-        }
-      },
-},
-		"fail (node exists)":   {
-      n1,
-      "baz",
-      func(t *testing.T, err error){
-        if err == nil {
-          t.Fatal("expected error")
-        }
-        ok, node := uniquemappers.IsNodeAlreadyTakenError(err)
-        if !ok {
-          t.Errorf("expected error to be caused by trying to map a node already mapped")
-        }
-        if node != n1 {
-          t.Errorf("expected n1 as node")
-        }
-      },
-},
+		"success": {
+			n2,
+			"bar",
+			func(t *testing.T, err error) {
+				if err != nil {
+					t.Errorf("expected no error, got %+v", err)
+				}
+			},
+		},
+		"fail (both exist)": {
+			n1,
+			"foo",
+			func(t *testing.T, err error) {
+				if err == nil {
+					t.Fatal("expected error")
+				}
+				ok, node := uniquemappers.IsNodeAlreadyTakenError(err)
+				if !ok {
+					t.Errorf("expected error to be caused by trying to map a node already mapped")
+				}
+				if node != n1 {
+					t.Errorf("expected n1 as node")
+				}
+			},
+		},
+		"fail (node exists)": {
+			n1,
+			"baz",
+			func(t *testing.T, err error) {
+				if err == nil {
+					t.Fatal("expected error")
+				}
+				ok, node := uniquemappers.IsNodeAlreadyTakenError(err)
+				if !ok {
+					t.Errorf("expected error to be caused by trying to map a node already mapped")
+				}
+				if node != n1 {
+					t.Errorf("expected n1 as node")
+				}
+			},
+		},
 		"fail (string exists)": {
-      n3,
-      "foo",
-      func(t *testing.T, err error){
-        if err == nil {
-          t.Fatal("expected error")
-        }
-      },
-},
+			n3,
+			"foo",
+			func(t *testing.T, err error) {
+				if err == nil {
+					t.Fatal("expected error")
+				}
+			},
+		},
 	}
 
 	for name := range testcases {
@@ -88,7 +88,7 @@ func TestAddStringMappingErrs(t *testing.T) {
 						String: testcase.str,
 					},
 				)
-        testcase.checkErr(t, err)
+				testcase.checkErr(t, err)
 			},
 		)
 	}
@@ -205,43 +205,43 @@ func TestStringMapperExposesContents(t *testing.T) {
 		"strings",
 		func(t *testing.T) {
 			strings := mapper.Strings()
-      sort.Strings(strings)
-      expected := []string{"bar", "baz", "foo"}
+			sort.Strings(strings)
+			expected := []string{"bar", "baz", "foo"}
 
 			if len(strings) != len(expected) {
 				t.Fatalf("expected %d strings, got %+v", len(expected), strings)
 			}
-      for i := range expected {
-        if expected[i] != strings[i] {
-          t.Errorf("expected to find '%s'", expected[i])
-        }
-      }
+			for i := range expected {
+				if expected[i] != strings[i] {
+					t.Errorf("expected to find '%s'", expected[i])
+				}
+			}
 		},
 	)
 	t.Run(
 		"nodes",
 		func(t *testing.T) {
-      nodes := mapper.Nodes()
-      if len(nodes) != 3 {
-        t.Fatalf("expected 3 nodes, got %d", len(nodes))
-      }
-      found := make(map[digraph.Node]struct{})
-      for i := range nodes {
-        if _, ok := found[nodes[i]]; ok {
-          t.Errorf("duplicate node")
-          continue
-        }
-        found[nodes[i]] = struct{}{}
-      }
-      for node := range found {
-        switch node {
-        case n1:
-        case n2:
-        case n3:
-        default:
-          t.Error("unknown node found")
-        }
-      }
-    },
+			nodes := mapper.Nodes()
+			if len(nodes) != 3 {
+				t.Fatalf("expected 3 nodes, got %d", len(nodes))
+			}
+			found := make(map[digraph.Node]struct{})
+			for i := range nodes {
+				if _, ok := found[nodes[i]]; ok {
+					t.Errorf("duplicate node")
+					continue
+				}
+				found[nodes[i]] = struct{}{}
+			}
+			for node := range found {
+				switch node {
+				case n1:
+				case n2:
+				case n3:
+				default:
+					t.Error("unknown node found")
+				}
+			}
+		},
 	)
 }
