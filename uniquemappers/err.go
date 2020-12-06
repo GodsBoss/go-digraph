@@ -37,16 +37,25 @@ type alreadyTakenError struct {
 
 func (err alreadyTakenError) Error() string {
 	if err.node != nil && err.s != nil {
-		return "node and string already taken"
+		return NodeAndStringAlreadyTakenMessage
 	}
 	if err.node != nil {
-		return "node already taken"
+		return NodeAlreadyTakenMessage
 	}
 	if err.s != nil {
-		return "string already taken"
+		return StringAlreadyTakenMessage
 	}
 	return ""
 }
+
+// These are the messages the error caused by trying to map already mapped
+// will expose. Do not depend on these exact values, they may change in the
+// future! These are merely here for information.
+const (
+	NodeAndStringAlreadyTakenMessage = "node and string already taken"
+	NodeAlreadyTakenMessage          = "node already taken"
+	StringAlreadyTakenMessage        = "string already taken"
+)
 
 func (err alreadyTakenError) nodeAlreadyTaken() (bool, digraph.Node) {
 	if err.node == nil {
