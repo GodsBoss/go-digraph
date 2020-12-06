@@ -36,7 +36,16 @@ type alreadyTakenError struct {
 }
 
 func (err alreadyTakenError) Error() string {
-	return "node already taken"
+	if err.node != nil && err.s != nil {
+		return "node and string already taken"
+	}
+	if err.node != nil {
+		return "node already taken"
+	}
+	if err.s != nil {
+		return "string already taken"
+	}
+	return ""
 }
 
 func (err alreadyTakenError) nodeAlreadyTaken() (bool, digraph.Node) {
