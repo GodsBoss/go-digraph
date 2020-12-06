@@ -22,12 +22,44 @@ func TestAddStringMappingErrs(t *testing.T) {
 	testcases := map[string]struct {
 		node        digraph.Node
 		str         string
-		expectedErr bool
+		checkErr func(*testing.T, error)
 	}{
-		"success":              {n2, "bar", false},
-		"fail (both exist)":    {n1, "foo", true},
-		"fail (node exists)":   {n1, "baz", true},
-		"fail (string exists)": {n3, "foo", true},
+		"success":              {
+      n2,
+      "bar",
+      func(t *testing.T, err error){
+        if err != nil {
+          t.Errorf("expected no error, got %+v", err)
+        }
+      },
+    },
+		"fail (both exist)":    {
+      n1,
+      "foo",
+      func(t *testing.T, err error){
+        if err == nil {
+          t.Fatal("expected error")
+        }
+      },
+},
+		"fail (node exists)":   {
+      n1,
+      "baz",
+      func(t *testing.T, err error){
+        if err == nil {
+          t.Fatal("expected error")
+        }
+      },
+},
+		"fail (string exists)": {
+      n3,
+      "foo",
+      func(t *testing.T, err error){
+        if err == nil {
+          t.Fatal("expected error")
+        }
+      },
+},
 	}
 
 	for name := range testcases {
@@ -42,12 +74,7 @@ func TestAddStringMappingErrs(t *testing.T) {
 						String: testcase.str,
 					},
 				)
-				if testcase.expectedErr && err == nil {
-					t.Error("expected error")
-				}
-				if err != nil && !testcase.expectedErr {
-					t.Errorf("expected no error, got %+v", err)
-				}
+        testcase.checkErr(t, err)
 			},
 		)
 	}
