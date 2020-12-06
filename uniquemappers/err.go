@@ -36,16 +36,13 @@ type alreadyTakenError struct {
 }
 
 func (err alreadyTakenError) Error() string {
-	if err.node != nil && err.s != nil {
-		return NodeAndStringAlreadyTakenMessage
-	}
-	if err.node != nil {
-		return NodeAlreadyTakenMessage
-	}
-	if err.s != nil {
+	if err.node == nil {
 		return StringAlreadyTakenMessage
 	}
-	return ""
+	if err.s == nil {
+		return NodeAlreadyTakenMessage
+	}
+	return NodeAndStringAlreadyTakenMessage
 }
 
 // These are the messages the error caused by trying to map already mapped
